@@ -1,0 +1,82 @@
+name: Weekly Security Audit
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'   # Every Monday at 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Run npm audit
+        run: |
+          bun audit > audit-report.txt 2>&1 || true
+          cat audit-report.txt
+
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'GMAO Pro'
+          path: '.'
+          format: 'HTML'
+          out: 'reports'
+        continue-on-error: true
+
+      - name: Scan for secrets with TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          extra_args: --only-verified --json > secrets-report.json
+        continue-on-error: true
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            reports/
+            audit-report.txt
+            secrets-report.json
+          retention-days: 30
+
+      - name: Security summary
+        run: |
+          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** ${{ github.ref_name }}"" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Reports Generated" >> $GITHUB_STEP_SUMMARY
+          echo "- npm audit report" >> $GITHUB_STEP_SUMMARY
+          echo "- OWASP dependency check" >> $GITHUB_STEP_SUMMARY
+          echo "- Secret scan results" >> $GITHUB_STEP_SUMMARY
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high

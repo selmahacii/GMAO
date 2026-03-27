@@ -1,0 +1,745 @@
+// GMAO Pro - Computerized Maintenance Management System
+// Enterprise-grade CMMS for industrial facilities
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ORGANIZATION & MULTI-TENANCY
+// ============================================
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  industry    String
+  plan        String   @default("Starter")
+  sitesCount  Int      @default(0)
+  timezone    String   @default("Africa/Algiers")
+  currency    String   @default("DZD")
+  logoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sites               Site[]
+  users               User[]
+  assets              Asset[]
+  workOrders          WorkOrder[]
+  spareParts          SparePart[]
+  suppliers           Supplier[]
+  pmTemplates         PmTemplate[]
+  alerts              Alert[]
+  contracts           MaintenanceContract[]
+  sensors             IoTSensor[]
+  purchaseOrders      PurchaseOrder[]
+  subscription        Subscription?
+  usageRecords        UsageRecord[]
+  invoices            Invoice[]
+}
+
+model Site {
+  id        String   @id @default(cuid())
+  orgId     String
+  name      String
+  address   String?
+  country   String   @default("Algérie")
+  type      String
+  surfaceM2 Float?
+  managerId String?
+  timezone  String   @default("Europe/Paris")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  assets       Asset[]
+  workOrders   WorkOrder[]
+  spareParts   SparePart[]
+  alerts       Alert[]
+  users        User[]
+
+  @@index([orgId])
+}
+
+// ============================================
+// USERS & AUTHENTICATION
+// ============================================
+
+model User {
+  id               String   @id @default(cuid())
+  orgId            String
+  siteId           String?
+  email            String   @unique
+  password         String
+  fullName         String
+  role             String   @default("technician")
+  specializations  String   @default("[]")
+  phone            String?
+  hourlyRateDzd    Float?   // Taux horaire en DZD
+  active           Boolean  @default(true)
+  avatarUrl        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  lastLogin        DateTime?
+
+  // Enhanced Technician Fields
+  employeeId       String?  // Matricule
+  position         String?  // Poste (Technicien de maintenance, Chef d'équipe, etc.)
+  department       String?  // Département
+  section          String?  // Section
+  shift            String?  // Équipe (Matin, Après-midi, Nuit)
+  workSchedule     String?  // Horaires de travail
+  hireDate         DateTime? // Date d'embauche
+  skillLevel       Int      @default(1) // Niveau de compétence (1-5)
+  certifications   String   @default("[]") // Certifications JSON
+  maxWorkingHoursWeek Float? @default(40) // Heures max par semaine
+  points           Int      @default(0) // Points de performance
+  badges           String   @default("[]") // Badges obtenus
+
+  organization        Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  site                Site?         @relation(fields: [siteId], references: [id])
+  checklistCompletions WoChecklistCompletion[]
+  laborEntries        WoLaborEntry[]
+  sparePartMovements  SparePartMovement[]
+  acknowledgedAlerts  Alert[]
+  workOrdersAssigned  WorkOrder[]   @relation("AssignedWorkOrders")
+  workOrdersRequested WorkOrder[]   @relation("RequestedWorkOrders")
+  workOrdersValidated WorkOrder[]   @relation("ValidatedWorkOrders")
+
+  @@index([orgId])
+  @@index([email])
+  @@index([role])
+  @@index([department])
+}
+
+// ============================================
+// ASSETS & EQUIPMENT REGISTRY
+// ============================================
+
+model AssetCategory {
+  id                  String   @id @default(cuid())
+  name                String
+  parentCategoryId    String?
+  defaultPmIntervalDays Int?
+  criticalityDefault  String   @default("C")
+  createdAt           DateTime @default(now())
+
+  assets              Asset[]
+
+  @@index([parentCategoryId])
+}
+
+model Asset {
+  id                        String   @id @default(cuid())
+  orgId                     String
+  siteId                    String
+  parentAssetId             String?
+  assetTag                  String   @unique
+  name                      String
+  description               String?
+  categoryId                String?
+  assetType                 String   @default("static")
+  manufacturer              String?
+  model                     String?
+  serialNumber              String?
+  yearManufactured          Int?
+  yearInstalled             Int?
+  criticality               String   @default("C")
+  status                    String   @default("operational")
+  locationZone              String?
+  locationFloor             String?
+  locationRoom              String?
+  gpsLat                    Float?
+  gpsLng                    Float?
+  purchasePriceDzd          Float?   // Prix d'achat en DZD
+  replacementCostDzd        Float?   // Coût de remplacement en DZD
+  insuranceValueDzd         Float?   // Valeur d'assurance en DZD
+  warrantyExpiryDate        DateTime?
+  expectedLifespanYears     Int?
+  lastMaintenanceDate       DateTime?
+  nextMaintenanceDate       DateTime?
+  maintenanceCountTotal     Int      @default(0)
+  operatingHoursTotal       Float    @default(0)
+  operatingHoursSinceLastPm Float    @default(0)
+  mtbfHours                 Float?
+  mttrHours                 Float?
+  availabilityPct           Float?
+  oeeScore                  Float?
+  healthScore               Float?
+  documentationUrl          String?
+  photoUrl                  String?
+  qrCodeUrl                 String?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+  decommissionedAt          DateTime?
+
+  organization              Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  site                      Site            @relation(fields: [siteId], references: [id])
+  category                  AssetCategory?  @relation(fields: [categoryId], references: [id])
+  workOrders                WorkOrder[]
+  meters                    AssetMeter[]
+  sensors                   IoTSensor[]
+  alerts                    Alert[]
+  pmSchedules               PmSchedule[]
+  compatibleParts           AssetCompatiblePart[]
+
+  @@index([orgId])
+  @@index([siteId])
+  @@index([assetTag])
+  @@index([criticality])
+  @@index([status])
+}
+
+model AssetMeter {
+  id              String   @id @default(cuid())
+  assetId         String
+  meterType       String
+  currentReading  Float    @default(0)
+  lastReadingDate DateTime?
+  unit            String
+  autoFromSensor  Boolean  @default(false)
+
+  asset           Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+}
+
+model AssetCompatiblePart {
+  id        String @id @default(cuid())
+  assetId   String
+  partId    String
+
+  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  part      SparePart @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, partId])
+}
+
+// ============================================
+// PREVENTIVE MAINTENANCE
+// ============================================
+
+model PmTemplate {
+  id                    String   @id @default(cuid())
+  orgId                 String
+  categoryId            String?
+  name                  String
+  description           String?
+  frequencyType         String   @default("calendar")
+  intervalDays          Int?
+  intervalMeterValue    Float?
+  estimatedDurationHours Float?
+  requiredSkillLevel    Int      @default(1)
+  checklistItems        String   @default("[]")
+  requiredParts         String   @default("[]")
+  requiredTools         String   @default("[]")
+  safetyInstructions    String?
+  regulatoryReference   String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  organization          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  workOrders            WorkOrder[]
+  pmSchedules           PmSchedule[]
+
+  @@index([orgId])
+}
+
+model PmSchedule {
+  id            String   @id @default(cuid())
+  assetId       String
+  templateId    String
+  nextDueDate   DateTime
+  lastCompleted DateTime?
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  asset         Asset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  template      PmTemplate  @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+  @@index([nextDueDate])
+}
+
+// ============================================
+// WORK ORDERS
+// ============================================
+
+model WorkOrder {
+  id                    String   @id @default(cuid())
+  orgId                 String
+  siteId                String
+  woNumber              String   @unique
+  woType                String   @default("corrective")
+  title                 String
+  description           String?
+  symptomDescription    String?
+  assetId               String?
+  locationOverride      String?
+  priority              String   @default("P3")
+  status                String   @default("draft")
+  requestedById         String
+  assignedToId          String?
+  assignedTeam          String   @default("[]")
+  pmTemplateId          String?
+  createdAt             DateTime @default(now())
+  plannedStartAt        DateTime?
+  plannedEndAt          DateTime?
+  actualStartAt         DateTime?
+  actualEndAt           DateTime?
+  completedAt           DateTime?
+  validatedAt           DateTime?
+  estimatedDurationHours Float?
+  actualDurationHours   Float?
+  estimatedCostDzd      Float?   // Coût estimé en DZD
+  actualCostDzd         Float?   // Coût réel en DZD
+  downtimeHours         Float?
+  rootCause             String?
+  correctiveAction      String?
+  technicianNotes       String?
+  failureMode           String?
+  failureCategory       String?
+  resolutionType        String?
+  validatedById         String?
+  validationNotes       String?
+  recurrenceFlag        Boolean  @default(false)
+  photos                String   @default("[]")
+  linkedWoIds           String   @default("[]")
+  slaDeadline           DateTime?
+  slaBreached           Boolean  @default(false)
+  checklistItems        String   @default("[]")
+  
+  // Work Execution Details
+  workPriority          Int      @default(3) // 1-5 priority score for scheduling
+  difficultyLevel       Int      @default(2) // 1-5 difficulty
+  requiredSkills        String   @default("[]") // JSON array of required skills
+  safetyPermitRequired  Boolean  @default(false)
+  lockoutTagoutRequired Boolean  @default(false)
+  estimatedWorkers      Int      @default(1)
+
+  organization          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  site                  Site         @relation(fields: [siteId], references: [id])
+  asset                 Asset?       @relation(fields: [assetId], references: [id])
+  pmTemplate            PmTemplate?  @relation(fields: [pmTemplateId], references: [id])
+  requestedBy           User         @relation("RequestedWorkOrders", fields: [requestedById], references: [id])
+  assignedTo            User?        @relation("AssignedWorkOrders", fields: [assignedToId], references: [id])
+  validatedBy           User?        @relation("ValidatedWorkOrders", fields: [validatedById], references: [id])
+  checklistCompletions  WoChecklistCompletion[]
+  partsUsed             WoPartUsed[]
+  laborEntries          WoLaborEntry[]
+  alerts                Alert[]
+  sparePartMovements    SparePartMovement[]
+
+  @@index([orgId])
+  @@index([siteId])
+  @@index([assetId])
+  @@index([status])
+  @@index([priority])
+  @@index([woType])
+  @@index([createdAt])
+}
+
+model WoChecklistCompletion {
+  id            String   @id @default(cuid())
+  woId          String
+  checklistItem String
+  isDone        Boolean  @default(false)
+  doneById      String?
+  doneAt        DateTime?
+  notes         String?
+
+  workOrder     WorkOrder @relation(fields: [woId], references: [id], onDelete: Cascade)
+  doneBy        User?     @relation(fields: [doneById], references: [id])
+
+  @@index([woId])
+}
+
+model WoPartUsed {
+  id          String   @id @default(cuid())
+  woId        String
+  partId      String
+  qtyUsed     Float
+  unitCost    Float?
+  totalCost   Float?
+
+  workOrder   WorkOrder   @relation(fields: [woId], references: [id], onDelete: Cascade)
+  part        SparePart   @relation(fields: [partId], references: [id])
+
+  @@index([woId])
+  @@index([partId])
+}
+
+model WoLaborEntry {
+  id          String   @id @default(cuid())
+  woId        String
+  userId      String
+  hours       Float
+  rate        Float?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  workOrder   WorkOrder @relation(fields: [woId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([woId])
+  @@index([userId])
+}
+
+// ============================================
+// SPARE PARTS & INVENTORY
+// ============================================
+
+model SparePart {
+  id                      String   @id @default(cuid())
+  orgId                   String
+  siteId                  String?
+  partNumber              String
+  manufacturerPartNumber  String?
+  barcode                 String?
+  name                    String
+  description             String?
+  category                String
+  unit                    String   @default("pcs")
+  unitCostDzd             Float?   // Coût unitaire en DZD
+  lastPurchasePriceDzd    Float?   // Dernier prix d'achat en DZD
+  stockQty                Float    @default(0)
+  minStockQty             Float    @default(0)
+  maxStockQty             Float?
+  reorderQty              Float?
+  stockLocation           String?
+  leadTimeDays            Int?
+  preferredSupplierId     String?
+  isCritical              Boolean  @default(false)
+  lastUsedDate            DateTime?
+  totalConsumedYtd        Float    @default(0)
+  totalConsumedAllTime    Float    @default(0)
+  photoUrl                String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  organization            Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  site                    Site?        @relation(fields: [siteId], references: [id])
+  supplier                Supplier?    @relation(fields: [preferredSupplierId], references: [id])
+  movements               SparePartMovement[]
+  purchaseOrderItems      PurchaseOrderItem[]
+  compatibleAssets        AssetCompatiblePart[]
+  woPartsUsed             WoPartUsed[]
+
+  @@unique([orgId, partNumber])
+  @@index([orgId])
+  @@index([siteId])
+  @@index([category])
+}
+
+model SparePartMovement {
+  id            String   @id @default(cuid())
+  partId        String
+  woId          String?
+  type          String
+  qty           Float
+  unitCost      Float?
+  totalCost     Float?
+  movedById     String?
+  movedAt       DateTime @default(now())
+  notes         String?
+  referenceDoc  String?
+
+  part          SparePart   @relation(fields: [partId], references: [id], onDelete: Cascade)
+  workOrder     WorkOrder?  @relation(fields: [woId], references: [id])
+  movedBy       User?       @relation(fields: [movedById], references: [id])
+
+  @@index([partId])
+  @@index([movedAt])
+}
+
+// ============================================
+// SUPPLIERS & PURCHASE ORDERS
+// ============================================
+
+model Supplier {
+  id            String   @id @default(cuid())
+  orgId         String
+  name          String
+  contactName   String?
+  email         String?
+  phone         String?
+  address       String?
+  country       String   @default("Algérie")
+  rating        Int?
+  paymentTerms  String?
+  catalogUrl    String?
+  preferred     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  parts         SparePart[]
+  purchaseOrders PurchaseOrder[]
+  contracts     MaintenanceContract[]
+
+  @@index([orgId])
+}
+
+model PurchaseOrder {
+  id                    String   @id @default(cuid())
+  orgId                 String
+  supplierId            String
+  poNumber              String
+  status                String   @default("draft")
+  createdAt             DateTime @default(now())
+  sentAt                DateTime?
+  expectedDeliveryDate  DateTime?
+  receivedAt            DateTime?
+  totalDzd              Float?   // Total en DZD
+  notes                 String?
+  createdById           String?
+
+  organization          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  supplier              Supplier     @relation(fields: [supplierId], references: [id])
+  items                 PurchaseOrderItem[]
+
+  @@index([orgId])
+  @@index([supplierId])
+}
+
+model PurchaseOrderItem {
+  id            String   @id @default(cuid())
+  poId          String
+  partId        String
+  qty           Float
+  unitPrice     Float?
+  receivedQty   Float    @default(0)
+
+  purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+  part          SparePart     @relation(fields: [partId], references: [id])
+
+  @@index([poId])
+  @@index([partId])
+}
+
+// ============================================
+// IoT SENSORS & MONITORING
+// ============================================
+
+model IoTSensor {
+  id                      String   @id @default(cuid())
+  orgId                   String
+  assetId                 String
+  sensorType              String
+  sensorName              String
+  unit                    String
+  minNormal               Float?
+  maxNormal               Float?
+  warningThresholdLow     Float?
+  warningThresholdHigh    Float?
+  criticalThresholdLow    Float?
+  criticalThresholdHigh   Float?
+  samplingIntervalSec     Int      @default(60)
+  active                  Boolean  @default(true)
+  lastReadingAt           DateTime?
+  lastValue               Float?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  organization            Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  asset                   Asset        @relation(fields: [assetId], references: [id])
+  readings                SensorReading[]
+  alerts                  Alert[]
+
+  @@index([orgId])
+  @@index([assetId])
+}
+
+model SensorReading {
+  id            String   @id @default(cuid())
+  sensorId      String
+  assetId       String
+  value         Float
+  unit          String
+  timestamp     DateTime @default(now())
+  anomalyScore  Float?
+  isAnomaly     Boolean  @default(false)
+
+  sensor        IoTSensor @relation(fields: [sensorId], references: [id], onDelete: Cascade)
+
+  @@index([sensorId])
+  @@index([assetId])
+  @@index([timestamp])
+}
+
+// ============================================
+// ALERTS & NOTIFICATIONS
+// ============================================
+
+model Alert {
+  id              String   @id @default(cuid())
+  orgId           String
+  siteId          String?
+  assetId         String?
+  sensorId        String?
+  woId            String?
+  alertType       String
+  severity        String   @default("info")
+  title           String
+  message         String
+  triggeredAt     DateTime @default(now())
+  acknowledgedAt  DateTime?
+  acknowledgedById String?
+  resolvedAt      DateTime?
+  autoResolved    Boolean  @default(false)
+
+  organization    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  site            Site?        @relation(fields: [siteId], references: [id])
+  asset           Asset?       @relation(fields: [assetId], references: [id])
+  sensor          IoTSensor?   @relation(fields: [sensorId], references: [id])
+  workOrder       WorkOrder?   @relation(fields: [woId], references: [id])
+  acknowledgedBy  User?        @relation(fields: [acknowledgedById], references: [id])
+
+  @@index([orgId])
+  @@index([severity])
+  @@index([triggeredAt])
+}
+
+// ============================================
+// MAINTENANCE CONTRACTS
+// ============================================
+
+model MaintenanceContract {
+  id                    String   @id @default(cuid())
+  orgId                 String
+  supplierId            String
+  assetId               String?
+  contractType          String
+  startDate             DateTime
+  endDate               DateTime
+  annualCostDzd         Float?   // Coût annuel en DZD
+  coverageDescription   String?
+  slaResponseHours      Int?
+  slaResolutionHours    Int?
+  renewalAlertDays      Int?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  organization          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  supplier              Supplier     @relation(fields: [supplierId], references: [id])
+
+  @@index([orgId])
+  @@index([endDate])
+}
+
+// ============================================
+// AUDIT LOG
+// ============================================
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  orgId         String
+  userId        String?
+  entityType    String
+  entityId      String
+  action        String
+  changesJson   String   @default("{}")
+  ipAddress     String?
+  timestamp     DateTime @default(now())
+
+  @@index([orgId])
+  @@index([entityType, entityId])
+  @@index([timestamp])
+}
+
+// ============================================
+// SUBSCRIPTIONS & BILLING
+// ============================================
+
+model Subscription {
+  id                  String   @id @default(cuid())
+  orgId               String   @unique
+  planId              String   @default("starter")
+  status              String   @default("trialing") // trialing, active, past_due, cancelled, expired
+  trialEndsAt         DateTime?
+  currentPeriodStart  DateTime?
+  currentPeriodEnd    DateTime?
+  stripeCustomerId    String?
+  stripeSubscriptionId String?
+  seatsPurchased      Int      @default(1)
+  monthlyPriceEur     Float?
+  annualBilling       Boolean  @default(false)
+  cancelAtPeriodEnd   Boolean  @default(false)
+  cancelledAt         DateTime?
+  cancellationReason  String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  organization        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  invoices            Invoice[]
+
+  @@index([orgId])
+  @@index([status])
+  @@index([stripeCustomerId])
+}
+
+model UsageRecord {
+  id              String   @id @default(cuid())
+  orgId           String
+  periodStart     DateTime
+  periodEnd       DateTime
+  workOrdersCount Int      @default(0)
+  assetsCount     Int      @default(0)
+  usersCount      Int      @default(0)
+  storageUsedMb   Float    @default(0)
+  sensorsActive   Int      @default(0)
+  apiCallsCount   Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, periodStart])
+  @@index([orgId])
+  @@index([periodStart])
+}
+
+model Invoice {
+  id              String   @id @default(cuid())
+  orgId           String
+  subscriptionId  String?
+  stripeInvoiceId String?  @unique
+  number          String?
+  status          String   @default("draft") // draft, open, paid, void, uncollectible
+  amountEur       Float
+  currency        String   @default("EUR")
+  dueDate         DateTime?
+  paidAt          DateTime?
+  pdfUrl          String?
+  hostedUrl       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization    Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@index([orgId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+// ============================================
+// USER PREFERENCES
+// ============================================
+
+model UserPreference {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  theme           String   @default("system")
+  sidebarState    String   @default("expanded")
+  dashboardLayout String   @default("{}")
+  notifications   String   @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+}
