@@ -157,8 +157,12 @@ export function WorkOrdersPage() {
       let woData = await woRes.json();
       const assetsData = await assetsRes.json();
 
-      // Injection de données Mock si l'API est vide ou échoue
-      if (!woData || Object.keys(woData).length === 0) {
+      // Forcer l'utilisation de mock data si l'API renvoie une erreur ou un format invalide
+      const hasError = woData && woData.error;
+      const isGrouped = woData && typeof woData === 'object' && !Array.isArray(woData);
+      
+      if (hasError || !isGrouped || Object.keys(woData).length === 0) {
+        // ... (rest of the mock data injection)
         woData = {
           draft: [
             {

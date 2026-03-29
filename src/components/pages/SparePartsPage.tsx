@@ -603,185 +603,170 @@ export function SparePartsPage() {
 
       {/* Part Detail Dialog */}
       <Dialog open={!!selectedPart} onOpenChange={() => setSelectedPart(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
-              Détails Pièce - {selectedPart?.partNumber}
-            </DialogTitle>
-          </DialogHeader>
+        <DialogContent className="w-[95vw] md:max-w-4xl max-h-[95vh] overflow-y-auto p-0 gap-0 border-none">
           {selectedPart && (
-            <div className="space-y-6">
-              {/* Header Info */}
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold">{selectedPart.name}</h3>
-                  <p className="text-sm text-gray-500">{selectedPart.description || selectedPart.partNumber}</p>
+            <div className="flex flex-col h-full bg-white dark:bg-zinc-950 rounded-lg overflow-hidden">
+              {/* Premium Header */}
+              <div className="p-6 border-b bg-gray-50/50 dark:bg-zinc-900/50">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                      <Package className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold tracking-tight">{selectedPart.name}</h3>
+                      <p className="text-sm text-gray-500 font-mono uppercase">{selectedPart.partNumber}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    {getStockStatusBadge(selectedPart.stockStatus)}
+                    {selectedPart.isCritical && <Badge variant="destructive" className="animate-pulse">CRITIQUE</Badge>}
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  {getStockStatusBadge(selectedPart.stockStatus)}
-                  {selectedPart.isCritical && <Badge variant="destructive">Critique</Badge>}
-                </div>
+                <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
+                  {selectedPart.description || "Aucune description technique détaillée disponible pour cette référence."}
+                </p>
               </div>
 
-              {/* KPI Cards */}
-              <div className="grid grid-cols-4 gap-4">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Package className="h-5 w-5 mx-auto text-blue-500 mb-1" />
-                    <p className="text-xl font-bold">{selectedPart.stockQty}</p>
-                    <p className="text-xs text-gray-500">Stock actuel</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <AlertTriangle className="h-5 w-5 mx-auto text-yellow-500 mb-1" />
-                    <p className="text-xl font-bold">{selectedPart.minStockQty}</p>
-                    <p className="text-xs text-gray-500">Stock minimum</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <DollarSign className="h-5 w-5 mx-auto text-green-500 mb-1" />
-                    <p className="text-xl font-bold">{(selectedPart.unitCostDzd || 0).toLocaleString()} DA</p>
-                    <p className="text-xs text-gray-500">Coût unitaire</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Clock className="h-5 w-5 mx-auto text-purple-500 mb-1" />
-                    <p className="text-xl font-bold">{selectedPart.leadTimeDays || '-'}j</p>
-                    <p className="text-xs text-gray-500">Délai livraison</p>
-                  </CardContent>
-                </Card>
-              </div>
+              <div className="p-6 space-y-8">
+                {/* KPI Cards Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Card className="border-none bg-blue-50/50 dark:bg-blue-950/20 shadow-none">
+                    <CardContent className="p-4 text-center">
+                      <Package className="h-4 w-4 mx-auto text-blue-500 mb-2" />
+                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{selectedPart.stockQty}</p>
+                      <p className="text-[10px] uppercase font-bold text-blue-600 opacity-70">Stock Actuel</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-none bg-orange-50/50 dark:bg-orange-950/20 shadow-none">
+                    <CardContent className="p-4 text-center">
+                      <AlertTriangle className="h-4 w-4 mx-auto text-orange-500 mb-2" />
+                      <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{selectedPart.minStockQty}</p>
+                      <p className="text-[10px] uppercase font-bold text-orange-600 opacity-70">Seuil Alerte</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-none bg-emerald-50/50 dark:bg-emerald-950/20 shadow-none">
+                    <CardContent className="p-4 text-center">
+                      <DollarSign className="h-4 w-4 mx-auto text-emerald-500 mb-2" />
+                      <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{(selectedPart.unitCostDzd || 0).toLocaleString()}</p>
+                      <p className="text-[10px] uppercase font-bold text-emerald-600 opacity-70">Prix Unitaire (DA)</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-none bg-purple-50/50 dark:bg-purple-950/20 shadow-none">
+                    <CardContent className="p-4 text-center">
+                      <Clock className="h-4 w-4 mx-auto text-purple-500 mb-2" />
+                      <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">{selectedPart.leadTimeDays || '-'}</p>
+                      <p className="text-[10px] uppercase font-bold text-purple-600 opacity-70">Délai (Jours)</p>
+                    </CardContent>
+                  </Card>
+                </div>
 
-              {/* Details Grid */}
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium mb-2 flex items-center gap-2">
-                      <Package className="h-4 w-4" />
-                      Informations
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                        <p className="text-gray-500">Catégorie</p>
-                        <p className="font-medium">{getCategoryLabel(selectedPart.category)}</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {/* Technical Info */}
+                  <div className="md:col-span-2 space-y-6">
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
+                        <Settings className="h-3 w-3" />
+                        Spécifications Techniques
+                      </h4>
+                      <div className="grid grid-cols-2 gap-px bg-gray-200 dark:bg-zinc-800 rounded-lg overflow-hidden border border-gray-200 dark:border-zinc-800">
+                        <div className="p-4 bg-white dark:bg-zinc-900">
+                          <p className="text-[10px] text-gray-400 uppercase font-bold">Catégorie</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">{getCategoryLabel(selectedPart.category)}</p>
+                        </div>
+                        <div className="p-4 bg-white dark:bg-zinc-900">
+                          <p className="text-[10px] text-gray-400 uppercase font-bold">Unité de mesure</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">{selectedPart.unit}</p>
+                        </div>
+                        <div className="p-4 bg-white dark:bg-zinc-900">
+                          <p className="text-[10px] text-gray-400 uppercase font-bold">Emplacement Stock</p>
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">{selectedPart.stockLocation || 'NON DÉFINI'}</p>
+                        </div>
+                        <div className="p-4 bg-white dark:bg-zinc-900">
+                          <p className="text-[10px] text-gray-400 uppercase font-bold">Consommation YTD</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">{selectedPart.totalConsumedYtd} {selectedPart.unit}</p>
+                        </div>
                       </div>
-                      <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                        <p className="text-gray-500">Unité</p>
-                        <p className="font-medium">{selectedPart.unit}</p>
+                    </div>
+
+                    {/* Stock Meter */}
+                    <div className="p-5 bg-zinc-900 dark:bg-white/5 rounded-xl text-white">
+                      <div className="flex justify-between items-end mb-3">
+                        <div>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">État des réserves</p>
+                          <p className="text-lg font-bold">Niveau: {((selectedPart.stockQty / (selectedPart.maxStockQty || selectedPart.minStockQty * 3)) * 100).toFixed(0)}%</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-black">{selectedPart.stockQty} <span className="text-sm font-normal text-zinc-400">{selectedPart.unit}</span></p>
+                        </div>
                       </div>
-                      <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                        <p className="text-gray-500">Emplacement</p>
-                        <p className="font-medium">{selectedPart.stockLocation || '-'}</p>
-                      </div>
-                      <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                        <p className="text-gray-500">Consommé (année)</p>
-                        <p className="font-medium">{selectedPart.totalConsumedYtd} {selectedPart.unit}</p>
+                      <Progress 
+                        value={(selectedPart.stockQty / (selectedPart.maxStockQty || selectedPart.minStockQty * 3)) * 100} 
+                        className="h-2 bg-zinc-800"
+                      />
+                      <div className="flex justify-between text-[10px] font-bold mt-2 text-zinc-500">
+                        <span>MIN: {selectedPart.minStockQty}</span>
+                        <span>MAX: {selectedPart.maxStockQty || '---'}</span>
                       </div>
                     </div>
                   </div>
 
-                  {selectedPart.supplier && (
+                  {/* Sidebar Info (History/Supplier) */}
+                  <div className="space-y-6">
                     <div>
-                      <h4 className="font-medium mb-2">Fournisseur</h4>
-                      <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <p className="font-medium">{selectedPart.supplier.name}</p>
-                        {selectedPart.supplier.phone && (
-                          <p className="text-sm text-gray-500">{selectedPart.supplier.phone}</p>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
+                          <History className="h-3 w-3" />
+                          Mouvements
+                        </h4>
+                        <Button variant="ghost" size="sm" className="h-7 text-[10px] font-bold" onClick={() => setMovementDialogOpen(true)}>
+                          AJOUTER
+                        </Button>
+                      </div>
+                      <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+                        {movements.length === 0 ? (
+                          <p className="text-xs text-center py-8 text-gray-400 bg-gray-50 dark:bg-zinc-900 rounded-lg italic">Aucun mouvement</p>
+                        ) : (
+                          movements.map((m) => (
+                            <div key={m.id} className="p-2 bg-gray-50 dark:bg-zinc-900 rounded border border-gray-100 dark:border-zinc-800 flex items-center gap-2">
+                              {getMovementIcon(m.type)}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[11px] font-bold leading-none">{m.type === 'in' ? '+' : '-'}{Math.abs(m.qty)}</p>
+                                <p className="text-[9px] text-gray-400 truncate">{new Date(m.movedAt).toLocaleDateString()}</p>
+                              </div>
+                            </div>
+                          ))
                         )}
                       </div>
                     </div>
-                  )}
-                </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium flex items-center gap-2">
-                      <History className="h-4 w-4" />
-                      Historique des mouvements
-                    </h4>
-                    <Button 
-                      size="sm" 
-                      onClick={() => setMovementDialogOpen(true)}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Mouvement
-                    </Button>
-                  </div>
-                  {movementsLoading ? (
-                    <div className="p-4 text-center text-gray-500">Chargement...</div>
-                  ) : movements.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500">
-                      Aucun mouvement enregistré
-                    </div>
-                  ) : (
-                    <ScrollArea className="h-64">
-                      <div className="space-y-2">
-                        {movements.slice(0, 10).map((m) => (
-                          <div key={m.id} className={`flex items-center gap-3 p-2 rounded-lg ${
-                            m.type === 'in' ? 'bg-green-50 dark:bg-green-900/20' :
-                            m.type === 'out' ? 'bg-red-50 dark:bg-red-900/20' :
-                            'bg-gray-50 dark:bg-gray-800'
-                          }`}>
-                            {getMovementIcon(m.type)}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between">
-                                <span className={`font-medium ${m.type === 'in' ? 'text-green-700' : m.type === 'out' ? 'text-red-700' : ''}`}>
-                                  {m.type === 'in' ? '+' : m.type === 'out' ? '-' : ''}{Math.abs(m.qty)} {selectedPart.unit}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  {new Date(m.movedAt).toLocaleDateString('fr-FR')}
-                                </span>
-                              </div>
-                              <p className="text-xs text-gray-500 truncate">
-                                {m.notes || (m.workOrder ? `OT: ${m.workOrder.woNumber}` : '-')}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
+                    {selectedPart.supplier && (
+                      <div className="p-4 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700">
+                        <p className="text-[10px] font-bold text-zinc-400 mb-2 uppercase">Fournisseur Principal</p>
+                        <p className="font-bold text-sm">{selectedPart.supplier.name}</p>
+                        <p className="text-xs text-blue-600 dark:text-blue-400">{selectedPart.supplier.phone || "---"}</p>
                       </div>
-                    </ScrollArea>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Stock Level Indicator */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Niveau de stock</span>
-                  <span>{selectedPart.stockQty} / {selectedPart.maxStockQty || selectedPart.minStockQty * 3} {selectedPart.unit}</span>
-                </div>
-                <Progress 
-                  value={(selectedPart.stockQty / (selectedPart.maxStockQty || selectedPart.minStockQty * 3)) * 100} 
-                  className="h-3"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span className="text-red-500">Min: {selectedPart.minStockQty}</span>
-                  <span className="text-yellow-500">Réappro: {selectedPart.reorderQty || selectedPart.minStockQty * 2}</span>
-                  <span className="text-green-500">Max: {selectedPart.maxStockQty || 'N/D'}</span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-4 border-t">
-                <Button onClick={() => setMovementDialogOpen(true)}>
+              {/* Action Bar */}
+              <div className="p-6 bg-gray-50 dark:bg-zinc-900/50 border-t flex flex-wrap gap-2">
+                <Button className="flex-1 md:flex-none" onClick={() => setMovementDialogOpen(true)}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Mouvement de stock
+                  Mouvement Stock
                 </Button>
-                <Button variant="outline">
+                <Button variant="outline" className="flex-1 md:flex-none">
                   <ShoppingCart className="mr-2 h-4 w-4" />
-                  Commander
+                  Réapprovisionner
                 </Button>
-                <Button variant="outline">
+                <Button variant="outline" className="flex-1 md:flex-none">
                   <Edit className="mr-2 h-4 w-4" />
                   Modifier
                 </Button>
-                <Button variant="outline">
-                  <Wrench className="mr-2 h-4 w-4" />
-                  Équipements compatibles
+                <Button variant="secondary" className="w-full md:w-auto ml-auto" onClick={() => setSelectedPart(null)}>
+                  Fermer
                 </Button>
               </div>
             </div>
