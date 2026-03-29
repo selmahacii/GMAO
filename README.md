@@ -73,7 +73,7 @@ bun run dev
 
 | Commande              | Description                              |
 |-----------------------|------------------------------------------|
-| `bun run dev`         | Serveur de développement (port 3000)    |
+| `bun run dev`         | Serveur de développement (port 3001)    |
 | `bun run build`       | Build production                         |
 | `bun run test`        | Tests unitaires (Vitest)                 |
 | `bun run test:coverage` | Tests avec rapport de couverture       |
@@ -181,10 +181,16 @@ docker run -p 3000:3000 gmao-pro
 
 ### Pipeline CI/CD
 
-```
-PR ouverte  →  Lint → Tests → Build → E2E
-Merge main  →  Déploiement staging automatique
-Release tag →  Déploiement production (approbation requise)
+```mermaid
+graph LR
+    PR(Pull Request) --> L(Lint)
+    L --> T(Tests)
+    T --> B(Build)
+    B --> E2E(Tests E2E)
+    E2E --> M(Merge Main)
+    M --> S(Déploiement Staging)
+    S --> R(Release Tag)
+    R --> |Approbation| P(Production)
 ```
 
 ---
@@ -193,8 +199,8 @@ Release tag →  Déploiement production (approbation requise)
 
 | Plan           | Prix mensuel | Équipements | Utilisateurs | Fonctionnalités clés          |
 |----------------|-------------|-------------|--------------|-------------------------------|
-| Starter        | 149 €       | 200         | 5            | Base, Analytics               |
-| Pro            | 399 €       | 2 000       | 25           | IoT, Analytique avancée, API  |
+| Starter        | 24 900 DZD  | 200         | 5            | Base, Analytics               |
+| Pro            | 59 900 DZD  | 2 000       | 25           | IoT, Analytique avancée, API  |
 | Enterprise     | Sur devis   | Illimité    | Illimité     | SSO, Marque blanche, SLA dédié|
 
 ---

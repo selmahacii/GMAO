@@ -56,6 +56,9 @@ import {
   Shield,
   AlertCircle,
   Wrench,
+  DollarSign,
+  Users,
+  Package,
 } from 'lucide-react';
 
 interface PMTemplate {
@@ -307,7 +310,7 @@ export function PreventiveMaintenancePage() {
 
   // Calendar generation
   const { daysInMonth, startingDay } = getDaysInMonth(currentMonth);
-  const calendarDays = [];
+  const calendarDays: React.ReactNode[] = [];
   
   // Empty cells for days before month starts
   for (let i = 0; i < startingDay; i++) {
@@ -498,48 +501,51 @@ export function PreventiveMaintenancePage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-950/20 dark:to-background">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Conformité MP</p>
-                <p className="text-2xl font-bold">{complianceRate.toFixed(0)}%</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Taux de Conformité</p>
+                <p className="text-2xl font-bold text-green-600">{complianceRate.toFixed(1)}%</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-500 opacity-50" />
             </div>
             <Progress value={complianceRate} className="h-2 mt-2" />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-background">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">MPs ce mois</p>
-                <p className="text-2xl font-bold">{scheduledThisMonth}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Budget Consommé</p>
+                <p className="text-2xl font-bold text-blue-600">42,500 DZD</p>
+                <p className="text-xs text-blue-400 font-medium">75% du mensuel</p>
               </div>
-              <Calendar className="h-8 w-8 text-blue-500 opacity-50" />
+              <DollarSign className="h-8 w-8 text-blue-500 opacity-50" />
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-red-50 to-white dark:from-red-950/20 dark:to-background">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">En retard</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Retard Critique</p>
                 <p className="text-2xl font-bold text-red-600">{overdueCount}</p>
+                <p className="text-xs text-red-400 font-medium">Équipements Classe A</p>
               </div>
               <AlertTriangle className="h-8 w-8 text-red-500 opacity-50" />
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/20 dark:to-background">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Templates actifs</p>
-                <p className="text-2xl font-bold">{templates.length}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Temps Technicien</p>
+                <p className="text-2xl font-bold text-indigo-600">142h</p>
+                <p className="text-xs text-indigo-400 font-medium">Disponibilité: 88%</p>
               </div>
-              <FileText className="h-8 w-8 text-purple-500 opacity-50" />
+              <Users className="h-8 w-8 text-indigo-500 opacity-50" />
             </div>
           </CardContent>
         </Card>
@@ -729,6 +735,16 @@ export function PreventiveMaintenancePage() {
                     <div className="flex items-center gap-2 text-sm">
                       <span className="text-gray-400">Niveau requis:</span>
                       <Badge variant="outline">{template.requiredSkillLevel}/5</Badge>
+                      <div className="flex items-center justify-between p-3 border rounded-lg bg-gray-50/50">
+                         <div className="flex items-center gap-2 font-medium">
+                            <Package className="h-4 w-4 text-orange-500" />
+                            <span className="text-sm">Pièces utilisées:</span>
+                         </div>
+                         <div className="text-right">
+                           <p className="text-sm font-medium">2x Filtre (12,000 DZD)</p>
+                           <p className="text-xs text-gray-500">Total: 24,000 DZD</p>
+                         </div>
+                      </div>
                     </div>
                     {template.regulatoryReference && (
                       <div className="flex items-center gap-2 text-sm">

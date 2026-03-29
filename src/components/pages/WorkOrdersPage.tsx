@@ -703,7 +703,7 @@ export function WorkOrdersPage() {
                 <Card>
                   <CardContent className="p-4 text-center">
                     <Wrench className="h-5 w-5 mx-auto text-purple-500 mb-1" />
-                    <p className="text-xl font-bold">{(selectedWO.actualCostDzd || 0).toLocaleString()} DA</p>
+                    <p className="text-xl font-bold">{(selectedWO.actualCostDzd || 0).toLocaleString()} DZD</p>
                     <p className="text-xs text-gray-500">Coût réel</p>
                   </CardContent>
                 </Card>
@@ -797,28 +797,59 @@ export function WorkOrdersPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h4 className="font-medium mb-2 flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      Historique
-                    </h4>
-                    <div className="text-sm space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Créé le:</span>
-                        <span>{new Date(selectedWO.createdAt).toLocaleString('fr-FR')}</span>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                         <Plus className="h-4 w-4" />
+                         Détails de l'intervention
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 border rounded-lg">
+                           <div className="flex items-center gap-2">
+                              <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              <span className="text-sm">Diagnostic initial</span>
+                           </div>
+                           <Badge variant="outline" className="text-xs">OK</Badge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 border rounded-lg">
+                           <div className="flex items-center gap-2">
+                              <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              <span className="text-sm">Nettoyage & Lubrification</span>
+                           </div>
+                           <Badge variant="outline" className="text-xs">OK</Badge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 border rounded-lg bg-gray-50/50">
+                           <div className="flex items-center gap-2 font-medium">
+                              <DollarSign className="h-4 w-4 text-orange-500" />
+                              <span className="text-sm">Pièces utilisées:</span>
+                           </div>
+                           <span className="text-sm text-gray-600">Filtre à air, Joint torique</span>
+                        </div>
                       </div>
-                      {selectedWO.requester && (
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        Historique
+                      </h4>
+                      <div className="text-sm space-y-1 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <div className="flex justify-between">
-                          <span className="text-gray-500">Demandeur:</span>
-                          <span>{selectedWO.requester.fullName}</span>
+                          <span className="text-gray-500">Créé le:</span>
+                          <span>{new Date(selectedWO.createdAt).toLocaleString('fr-FR')}</span>
                         </div>
-                      )}
-                      {selectedWO.completedAt && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Terminé le:</span>
-                          <span>{new Date(selectedWO.completedAt).toLocaleString('fr-FR')}</span>
-                        </div>
-                      )}
+                        {selectedWO.requester && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Demandeur:</span>
+                            <span>{selectedWO.requester.fullName}</span>
+                          </div>
+                        )}
+                        {selectedWO.completedAt && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Terminé le:</span>
+                            <span>{new Date(selectedWO.completedAt).toLocaleString('fr-FR')}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

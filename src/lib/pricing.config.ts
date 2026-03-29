@@ -50,9 +50,9 @@ export const PLANS: Plan[] = [
     id: 'starter',
     name: 'Starter',
     tagline: 'Pour les petites structures',
-    priceMonthly: 149,
-    priceAnnual: 119,      // per month, billed annually
-    currency: 'EUR',
+    priceMonthly: 24900,
+    priceAnnual: 19900,      // per month, billed annually
+    currency: 'DZD',
     highlighted: false,
     cta: 'Démarrer gratuitement',
     trialDays: 14,
@@ -89,9 +89,9 @@ export const PLANS: Plan[] = [
     id: 'pro',
     name: 'Pro',
     tagline: 'Pour les équipes en croissance',
-    priceMonthly: 399,
-    priceAnnual: 319,
-    currency: 'EUR',
+    priceMonthly: 59900,
+    priceAnnual: 47900,
+    currency: 'DZD',
     highlighted: true,       // → "Most Popular" badge
     cta: 'Essayer 14 jours gratuits',
     trialDays: 14,
@@ -130,7 +130,7 @@ export const PLANS: Plan[] = [
     tagline: 'Pour les grands comptes industriels',
     priceMonthly: null,     // → "Sur devis" display
     priceAnnual: null,
-    currency: 'EUR',
+    currency: 'DZD',
     highlighted: false,
     cta: 'Contacter les ventes',
     trialDays: 30,
@@ -203,7 +203,7 @@ export const ONBOARDING_LABELS: Record<PlanFeatures['onboarding'], string> = {
 
 // ROI Calculator constants
 export const ROI_CONSTANTS = {
-  avgDowntimeCostPerHour: 2500,        // €
+  avgDowntimeCostPerHour: 450000,        // DZD
   downtimeReductionPercent: 35,         // %
   mtbfImprovementPercent: 25,           // %
   pmComplianceTarget: 95,               // %

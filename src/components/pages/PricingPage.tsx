@@ -90,13 +90,13 @@ function PricingCard({ plan, isAnnual, onSelect }: PricingCardProps) {
             <>
               <div className="flex items-baseline justify-center gap-1">
                 <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                  {price}€
+                  {price.toLocaleString()} DZD
                 </span>
                 <span className="text-gray-500 dark:text-gray-400">/mois</span>
               </div>
               {isAnnual && savings > 0 && (
                 <Badge variant="secondary" className="mt-2 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                  Économisez {savings}€/an
+                  Économisez {savings.toLocaleString()} DZD/an
                 </Badge>
               )}
             </>
@@ -364,7 +364,7 @@ function ROICalculator() {
             />
           </div>
           <div className="space-y-3">
-            <Label>Coût d'une panne (€/heure)</Label>
+            <Label>Coût d'une panne (DZD/heure)</Label>
             <Input
               type="number"
               value={downtimeCost}
@@ -389,13 +389,13 @@ function ROICalculator() {
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-sm">
             <p className="text-sm text-gray-500 dark:text-gray-400">Coût actuel/an</p>
             <p className="text-2xl font-bold text-red-600">
-              {Math.round(calculations.annualDowntime).toLocaleString()}€
+              {Math.round(calculations.annualDowntime).toLocaleString()} DA
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-sm">
             <p className="text-sm text-gray-500 dark:text-gray-400">Économies estimées/an</p>
             <p className="text-2xl font-bold text-green-600">
-              {Math.round(calculations.downtimeReduction).toLocaleString()}€
+              {Math.round(calculations.downtimeReduction).toLocaleString()} DA
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-sm">
@@ -414,9 +414,9 @@ function ROICalculator() {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
           <p className="text-gray-600 dark:text-gray-300">
-            Investissement: <span className="font-bold">399€/mois</span>
+            Investissement: <span className="font-bold">59,900 DZD/mois</span>
             {' → '}
-            Économies estimées: <span className="font-bold text-green-600">{Math.round(calculations.monthlySavings).toLocaleString()}€/mois</span>
+            Économies estimées: <span className="font-bold text-green-600">{Math.round(calculations.monthlySavings).toLocaleString()} DA/mois</span>
           </p>
         </div>
       </CardContent>

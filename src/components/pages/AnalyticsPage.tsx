@@ -166,7 +166,7 @@ export function AnalyticsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500">Coût annuel</p>
-                    <p className="text-2xl font-bold">2.4M€</p>
+                    <p className="text-2xl font-bold">48.5M DA</p>
                     <div className="flex items-center gap-1 text-sm text-green-600">
                       <TrendingDown className="h-4 w-4" />
                       <span>-8% vs N-1</span>
@@ -270,7 +270,7 @@ export function AnalyticsPage() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <Tooltip formatter={(v: number) => `${(v / 1000).toFixed(0)}k€`} />
+                    <Tooltip formatter={(v: number) => `${(v / 1000).toFixed(0)}k DA`} />
                     <Legend />
                     <Bar dataKey="parts" name="Pièces" fill="#10b981" />
                     <Bar dataKey="labor" name="Main d'œuvre" fill="#3b82f6" />
