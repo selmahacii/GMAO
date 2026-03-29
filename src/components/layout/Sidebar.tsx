@@ -11,7 +11,6 @@ import {
   Radio,
   BarChart3,
   Bell,
-  Bot,
   ChevronLeft,
   ChevronRight,
   Factory,
@@ -42,7 +41,6 @@ const menuItems: Array<{ id: PageType; label: string; icon: React.ElementType; s
   { id: 'iot', label: 'Supervision IoT', icon: Radio },
   { id: 'analytics', label: 'Analytiques & KPIs', icon: BarChart3 },
   { id: 'alerts', label: 'Alertes', icon: Bell },
-  { id: 'ai', label: 'Assistant IA', icon: Bot },
   { id: 'pricing', label: 'Tarification', icon: CreditCard },
 ];
 

@@ -9,13 +9,12 @@ import { AssetsPage } from '@/components/pages/AssetsPage';
 import { IoTSupervisionPage } from '@/components/pages/IoTSupervisionPage';
 import { AnalyticsPage } from '@/components/pages/AnalyticsPage';
 import { SparePartsPage } from '@/components/pages/SparePartsPage';
-import { AIAssistantPage } from '@/components/pages/AIAssistantPage';
 import { AlertsPage } from '@/components/pages/AlertsPage';
 import { PreventiveMaintenancePage } from '@/components/pages/PreventiveMaintenancePage';
 import { TechnicianPerformancePage } from '@/components/pages/TechnicianPerformancePage';
 import { PricingPage } from '@/components/pages/PricingPage';
 
-export type PageType = 'dashboard' | 'work-orders' | 'assets' | 'iot' | 'analytics' | 'parts' | 'ai' | 'alerts' | 'pm' | 'technicians' | 'pricing';
+export type PageType = 'dashboard' | 'work-orders' | 'assets' | 'iot' | 'analytics' | 'parts' | 'alerts' | 'pm' | 'technicians' | 'pricing';
 
 export default function GMAOPro() {
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
@@ -45,8 +44,6 @@ export default function GMAOPro() {
         return <AnalyticsPage />;
       case 'parts':
         return <SparePartsPage />;
-      case 'ai':
-        return <AIAssistantPage />;
       case 'alerts':
         return <AlertsPage />;
       case 'pm':

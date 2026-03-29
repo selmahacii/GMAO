@@ -17,7 +17,6 @@ export interface PlanFeatures {
   analyticsBasic: boolean;
   analyticsAdvanced: boolean;
   iotSensors: boolean;
-  aiFeatures: boolean;
   apiAccess: boolean;
   sso: boolean;
   customBranding: boolean;
@@ -72,7 +71,6 @@ export const PLANS: Plan[] = [
       analyticsBasic: true,
       analyticsAdvanced: false,
       iotSensors: false,
-      aiFeatures: false,
       apiAccess: false,
       sso: false,
       customBranding: false,
@@ -112,7 +110,6 @@ export const PLANS: Plan[] = [
       analyticsBasic: true,
       analyticsAdvanced: true,
       iotSensors: true,
-      aiFeatures: true,
       apiAccess: true,
       sso: false,
       customBranding: false,
@@ -152,7 +149,6 @@ export const PLANS: Plan[] = [
       analyticsBasic: true,
       analyticsAdvanced: true,
       iotSensors: true,
-      aiFeatures: true,
       apiAccess: true,
       sso: true,
       customBranding: true,
@@ -177,7 +173,6 @@ export const FEATURE_LABELS: Record<keyof PlanFeatures, { label: string; descrip
   analyticsBasic: { label: 'Analytics basiques', description: 'Tableaux de bord KPIs' },
   analyticsAdvanced: { label: 'Analytics avancées', description: 'Pareto, OEE, tendances' },
   iotSensors: { label: 'Capteurs IoT', description: 'Supervision temps réel' },
-  aiFeatures: { label: 'Fonctions IA', description: 'Assistant, prédictions' },
   apiAccess: { label: 'Accès API', description: 'Intégration tierce' },
   sso: { label: 'SSO / SAML', description: 'Authentification unifiée' },
   customBranding: { label: 'Marque personnalisée', description: 'Logo et couleurs' },
@@ -225,7 +220,7 @@ export const TESTIMONIALS = [
     avatar: "KB",
   },
   {
-    quote: "La conformité de nos maintenances préventives est passée de 67% à 94% en 6 mois. L'assistant IA nous fait gagner un temps précieux.",
+    quote: "La conformité de nos maintenances préventives est passée de 67% à 94% en 6 mois.",
     author: "Fatima Zohra Hamidi",
     role: "Responsable Maintenance",
     company: "CHU Mustapha Alger",

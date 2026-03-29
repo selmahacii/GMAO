@@ -6,35 +6,28 @@
 
 ## Architecture
 
+```mermaid
+graph TD
+    Client[Client Web] --> Next[Next.js App Router]
+    Next --> Components[Composants UI - React/Tailwind]
+    Next --> API[API REST]
+    API --> Prisma[Prisma ORM]
+    Prisma --> DB[(Base de données SQLite/PostgreSQL)]
+
+**Schéma de Base de Données (ERD) :**
+```mermaid
+erDiagram
+    ORGANIZATION ||--o{ SITE : "possède"
+    ORGANIZATION ||--o{ USER : "comprend"
+    ORGANIZATION ||--o{ ASSET : "gère"
+    SITE ||--o{ ASSET : "contient"
+    ASSET ||--o{ WORK_ORDER : "maintenance"
+    USER ||--o{ WORK_ORDER : "demande/effectue"
+    ASSET ||--o{ IOT_SENSOR : "monitoré par"
+    IOT_SENSOR ||--o{ SENSOR_READING : "produit"
+    WORK_ORDER ||--o{ SPARE_PART_USED : "consomme"
+    SPARE_PART ||--o{ SPARE_PART_USED : "utilisé dans"
 ```
-gmao-pro/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── api/                # Routes API
-│   │   ├── page.tsx            # Point d'entrée de l'application
-│   │   └── layout.tsx          # Layout racine
-│   ├── components/
-│   │   ├── ui/                 # Composants shadcn/ui
-│   │   ├── layout/             # Sidebar, TopBar
-│   │   └── pages/              # Composants de pages
-│   ├── lib/
-│   │   ├── db.ts               # Client Prisma
-│   │   ├── utils.ts            # Utilitaires communs
-│   │   ├── algerian-market.ts  # Configuration marché algérien
-│   │   ├── pricing.config.ts   # Plans et tarification
-│   │   └── plan-limits.ts      # Limites d'utilisation par plan
-│   └── __tests__/              # Fichiers de test
-│       ├── mocks/              # Handlers MSW
-│       ├── components/         # Tests composants
-│       └── pages/              # Tests pages
-├── prisma/
-│   ├── schema.prisma           # Schéma de base de données
-│   └── seed.ts                 # Données d'amorçage
-├── e2e/                        # Tests E2E Playwright
-│   └── tests/
-├── .github/
-│   └── workflows/              # Pipelines CI/CD
-└── vitest.config.ts
 ```
 
 ---
@@ -103,6 +96,37 @@ bun run dev
 - Gestion des priorités P1 (Urgent) à P4 (Faible)
 - Suivi SLA avec alertes de dépassement
 - Intégration pièces, main-d'œuvre et temps d'arrêt
+
+**Flux de Travail (Workflow) :**
+```mermaid
+stateDiagram-v2
+    [*] --> Brouillon: Création OT
+    Brouillon --> Planifie: Planification
+    Planifie --> Assigne: Assignation Technicien
+    Assigne --> En_Cours: Début Intervention
+    En_Cours --> En_Attente: Suspension (Pièce manquante)
+    En_Attente --> En_Cours: Reprise
+    En_Cours --> Termine: Fin Intervention
+    Termine --> Valide: Validation Superviseur
+    Valide --> [*]
+```
+
+**Flux de création d'un Ordre de Travail :**
+```mermaid
+sequenceDiagram
+    participant U as Utilisateur
+    participant F as Frontend (Next.js)
+    participant B as Backend (API Route)
+    participant D as Base de données (Prisma)
+    
+    U->>F: Soumet le formulaire d'OT
+    F->>B: POST /api/work-orders
+    Note over B: Validation (Zod) + Génération No OT
+    B->>D: Create WorkOrder
+    D-->>B: Retourne l'OT créé
+    B-->>F: Response 201 Created
+    F-->>U: Affiche succès + Redirection
+```
 
 ### Maintenance Préventive
 - Planification par calendrier et par compteur

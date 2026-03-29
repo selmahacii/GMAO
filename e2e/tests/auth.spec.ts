@@ -24,7 +24,6 @@ test.describe('Authentication', () => {
       'Supervision IoT',
       'Analytiques',
       'Alertes',
-      'Assistant IA',
       'Tarification',
     ];
 
@@ -49,7 +48,6 @@ test.describe('User Role Restrictions', () => {
     await expect(page.locator('text=Supervision IoT')).toBeVisible();
     await expect(page.locator('text=Analytiques')).toBeVisible();
     await expect(page.locator('text=Alertes')).toBeVisible();
-    await expect(page.locator('text=Assistant IA')).toBeVisible();
     await expect(page.locator('text=Tarification')).toBeVisible();
   });
 
