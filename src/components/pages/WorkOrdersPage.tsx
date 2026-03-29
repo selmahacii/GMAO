@@ -57,7 +57,21 @@ import {
   Trash2,
   Loader2,
   DollarSign,
+  Package,
+  Users,
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  BarChart,
+  Bar,
+} from 'recharts';
+import { Separator } from '@/components/ui/separator';
 
 interface WorkOrder {
   id: string;
@@ -798,32 +812,58 @@ export function WorkOrdersPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium mb-2 flex items-center gap-2">
-                         <Plus className="h-4 w-4" />
-                         Détails de l'intervention
-                      </h4>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between p-3 border rounded-lg">
-                           <div className="flex items-center gap-2">
-                              <CheckCircle2 className="h-4 w-4 text-green-500" />
-                              <span className="text-sm">Diagnostic initial</span>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium mb-3 flex items-center gap-2 text-primary">
+                           <Package className="h-4 w-4" />
+                           Consommation de Pièces
+                        </h4>
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="h-8 py-0">
+                              <TableHead className="text-xs">Désignation</TableHead>
+                              <TableHead className="text-xs text-right">Qté</TableHead>
+                              <TableHead className="text-xs text-right">Prix Unitaire</TableHead>
+                              <TableHead className="text-xs text-right">Total</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            <TableRow className="h-8">
+                              <TableCell className="text-xs">Filtre à air industriel P-90</TableCell>
+                              <TableCell className="text-xs text-right">2</TableCell>
+                              <TableCell className="text-xs text-right">4,500 DZD</TableCell>
+                              <TableCell className="text-xs text-right font-medium">9,000 DZD</TableCell>
+                            </TableRow>
+                            <TableRow className="h-8">
+                              <TableCell className="text-xs">Joint torique Viton 45mm</TableCell>
+                              <TableCell className="text-xs text-right">5</TableCell>
+                              <TableCell className="text-xs text-right">800 DZD</TableCell>
+                              <TableCell className="text-xs text-right font-medium">4,000 DZD</TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium mb-3 flex items-center gap-2 text-primary">
+                           <Users className="h-4 w-4" />
+                           Main d'œuvre
+                        </h4>
+                        <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                           <div className="flex justify-between items-center mb-2">
+                             <div className="flex items-center gap-2">
+                               <Avatar className="h-6 w-6">
+                                 <AvatarFallback className="text-[10px]">TH</AvatarFallback>
+                               </Avatar>
+                               <span className="text-xs font-medium">T. Haddad (Expert)</span>
+                             </div>
+                             <span className="text-xs text-gray-500">4.5h @ 2,500 DZD/h</span>
                            </div>
-                           <Badge variant="outline" className="text-xs">OK</Badge>
-                        </div>
-                        <div className="flex items-center justify-between p-3 border rounded-lg">
-                           <div className="flex items-center gap-2">
-                              <CheckCircle2 className="h-4 w-4 text-green-500" />
-                              <span className="text-sm">Nettoyage & Lubrification</span>
+                           <Separator className="my-2 opacity-50" />
+                           <div className="flex justify-between items-center text-sm">
+                             <span className="font-medium">Total Main d'œuvre</span>
+                             <span className="font-bold text-blue-600">11,250 DZD</span>
                            </div>
-                           <Badge variant="outline" className="text-xs">OK</Badge>
-                        </div>
-                        <div className="flex items-center justify-between p-3 border rounded-lg bg-gray-50/50">
-                           <div className="flex items-center gap-2 font-medium">
-                              <DollarSign className="h-4 w-4 text-orange-500" />
-                              <span className="text-sm">Pièces utilisées:</span>
-                           </div>
-                           <span className="text-sm text-gray-600">Filtre à air, Joint torique</span>
                         </div>
                       </div>
                     </div>

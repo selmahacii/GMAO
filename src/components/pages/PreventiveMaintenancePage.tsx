@@ -56,9 +56,11 @@ import {
   Shield,
   AlertCircle,
   Wrench,
+  Edit,
+  Trash2,
   DollarSign,
-  Users,
   Package,
+  Users,
 } from 'lucide-react';
 
 interface PMTemplate {
@@ -497,6 +499,63 @@ export function PreventiveMaintenancePage() {
             </DialogContent>
           </Dialog>
         </div>
+      </div>
+
+      {/* Charts & Analytical Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Zap className="h-4 w-4 text-yellow-500" />
+              Tendance de Conformité Mensuelle
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-48 pt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={[
+                  { month: 'Jan', rate: 85 },
+                  { month: 'Fév', rate: 88 },
+                  { month: 'Mar', rate: 92 },
+                  { month: 'Avr', rate: 91 },
+                  { month: 'Mai', rate: complianceRate },
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                  <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
+                  <Tooltip labelClassName="text-black" />
+                  <Area type="monotone" dataKey="rate" stroke="#10b981" fill="#10b981" fillOpacity={0.1} strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <RefreshCw className="h-4 w-4 text-blue-500" />
+              Distribution par Type de Fréquence
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-48 pt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={[
+                  { type: 'Calendaire', count: schedules.filter(s => s.template?.frequencyType === 'calendar').length },
+                  { type: 'Compteur', count: schedules.filter(s => s.template?.frequencyType === 'meter').length },
+                  { type: 'Mixte', count: 2 },
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="type" tick={{ fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 10 }} />
+                  <Tooltip labelClassName="text-black" />
+                  <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Summary Cards */}
