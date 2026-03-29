@@ -49,7 +49,7 @@ export function Sidebar({ currentPage, onPageChange, collapsed, onToggle }: Side
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300',
+          'fixed inset-y-0 left-0 z-50 bg-white dark:bg-zinc-950 border-r border-gray-200 dark:border-zinc-800 flex flex-col transition-all duration-300 shadow-xl',
           collapsed ? 'w-16' : 'w-64'
         )}
       >

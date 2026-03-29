@@ -1,18 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Sidebar } from '@/components/layout/Sidebar';
-import { TopBar } from '@/components/layout/TopBar';
-import { Dashboard } from '@/components/pages/Dashboard';
-import { WorkOrdersPage } from '@/components/pages/WorkOrdersPage';
-import { AssetsPage } from '@/components/pages/AssetsPage';
-import { IoTSupervisionPage } from '@/components/pages/IoTSupervisionPage';
-import { AnalyticsPage } from '@/components/pages/AnalyticsPage';
-import { SparePartsPage } from '@/components/pages/SparePartsPage';
-import { AlertsPage } from '@/components/pages/AlertsPage';
-import { PreventiveMaintenancePage } from '@/components/pages/PreventiveMaintenancePage';
-import { TechnicianPerformancePage } from '@/components/pages/TechnicianPerformancePage';
-import { PricingPage } from '@/components/pages/PricingPage';
+import { Sidebar } from '../components/layout/Sidebar';
+import { TopBar } from '../components/layout/TopBar';
+import { cn } from '../lib/utils';
+import { Dashboard } from '../components/pages/Dashboard';
+import { WorkOrdersPage } from '../components/pages/WorkOrdersPage';
+import { AssetsPage } from '../components/pages/AssetsPage';
+import { IoTSupervisionPage } from '../components/pages/IoTSupervisionPage';
+import { AnalyticsPage } from '../components/pages/AnalyticsPage';
+import { SparePartsPage } from '../components/pages/SparePartsPage';
+import { AlertsPage } from '../components/pages/AlertsPage';
+import { PreventiveMaintenancePage } from '../components/pages/PreventiveMaintenancePage';
+import { TechnicianPerformancePage } from '../components/pages/TechnicianPerformancePage';
+import { PricingPage } from '../components/pages/PricingPage';
 
 export type PageType = 'dashboard' | 'work-orders' | 'assets' | 'iot' | 'analytics' | 'parts' | 'alerts' | 'pm' | 'technicians' | 'pricing';
 
@@ -58,14 +59,17 @@ export default function GMAOPro() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen flex bg-gray-50 dark:bg-zinc-950">
       <Sidebar
         currentPage={currentPage}
         onPageChange={setCurrentPage}
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className={cn(
+        "flex-1 flex flex-col min-w-0 transition-all duration-300",
+        sidebarCollapsed ? "ml-16" : "ml-64"
+      )}>
         <TopBar
           orgName={orgName}
           onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}

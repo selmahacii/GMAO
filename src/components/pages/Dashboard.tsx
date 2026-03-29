@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -230,166 +231,119 @@ export function Dashboard() {
       {/* Primary KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Availability */}
-        <Card className="relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-bl-full" />
+        <Card className="border-none shadow-sm bg-white dark:bg-zinc-900">
           <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Disponibilité</p>
-                <p className="text-4xl font-bold text-green-600">{kpis.availability}%</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm font-medium text-green-600">+{trends.availability.value}%</span>
-                  <span className="text-xs text-gray-400">vs mois prec.</span>
-                </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Disponibilité</p>
+                <Activity className="h-4 w-4 text-emerald-500" />
               </div>
-              <Activity className="h-8 w-8 text-green-600 opacity-50" />
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{kpis.availability}%</p>
+              <div className="flex items-center gap-1.5 mt-2">
+                <div className="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 rounded">
+                  <TrendingUp className="h-3 w-3 mr-0.5" />
+                  +{trends.availability.value}%
+                </div>
+                <span className="text-[10px] text-gray-400 font-medium whitespace-nowrap">CIBLE: 95%</span>
+              </div>
             </div>
-            <Progress value={parseFloat(kpis.availability)} className="h-1.5 mt-3" />
-            <p className="text-xs text-gray-400 mt-2">Objectif: 95%</p>
+            <Progress value={parseFloat(kpis.availability)} className="h-1 mt-4" />
           </CardContent>
         </Card>
 
         {/* MTBF */}
-        <Card className="relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-100 dark:bg-blue-900/30 rounded-bl-full" />
+        <Card className="border-none shadow-sm bg-white dark:bg-zinc-900">
           <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">MTBF Moyen</p>
-                <p className="text-4xl font-bold text-blue-600">{kpis.mtbf.toLocaleString()}h</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm font-medium text-green-600">+{trends.mtbf.value}%</span>
-                  <span className="text-xs text-gray-400">amélioration</span>
-                </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">MTBF Moyen</p>
+                <Clock className="h-4 w-4 text-blue-500" />
               </div>
-              <Clock className="h-8 w-8 text-blue-600 opacity-50" />
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{kpis.mtbf.toLocaleString()}h</p>
+              <div className="flex items-center gap-1.5 mt-2">
+                <div className="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 rounded">
+                  <TrendingUp className="h-3 w-3 mr-0.5" />
+                  +{trends.mtbf.value}%
+                </div>
+                <span className="text-[10px] text-gray-400 font-medium">BONS RÉSULTATS</span>
+              </div>
             </div>
-            <div className="flex gap-1 mt-3">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className={`h-2 flex-1 rounded ${i < 4 ? 'bg-blue-500' : 'bg-blue-200'}`} />
-              ))}
-            </div>
-            <p className="text-xs text-gray-400 mt-2">Performance excellente</p>
           </CardContent>
         </Card>
 
         {/* Work Orders */}
-        <Card className="relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-orange-100 dark:bg-orange-900/30 rounded-bl-full" />
+        <Card className="border-none shadow-sm bg-white dark:bg-zinc-900">
           <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">OTs en cours</p>
-                <p className="text-4xl font-bold text-orange-600">{kpis.workOrdersInProgress}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingDown className="h-4 w-4 text-green-500" />
-                  <span className="text-sm font-medium text-green-600">-{trends.workOrders.value}%</span>
-                  <span className="text-xs text-gray-400">vs semaine prec.</span>
-                </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">OTs en cours</p>
+                <Wrench className="h-4 w-4 text-orange-500" />
               </div>
-              <Wrench className="h-8 w-8 text-orange-600 opacity-50" />
-            </div>
-            <div className="flex items-center gap-2 mt-3">
-              <Badge variant="secondary" className="text-xs">
-                {kpis.workOrdersCompleted} clôturés
-              </Badge>
-              <Badge variant="outline" className="text-xs">
-                {kpis.workOrdersThisMonth} ce mois
-              </Badge>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{kpis.workOrdersInProgress}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 rounded-sm bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300">
+                  {kpis.workOrdersCompleted} CLÔTURÉS
+                </Badge>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* PM Compliance */}
-        <Card className="relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-100 dark:bg-purple-900/30 rounded-bl-full" />
+        <Card className="border-none shadow-sm bg-white dark:bg-zinc-900">
           <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Conformité PM</p>
-                <p className="text-4xl font-bold text-purple-600">{kpis.pmCompliance}%</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm font-medium text-green-600">+{trends.pmCompliance.value}%</span>
-                  <span className="text-xs text-gray-400">vs mois prec.</span>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Conformité PM</p>
+                <CheckCircle className="h-4 w-4 text-purple-500" />
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{kpis.pmCompliance}%</p>
+              <div className="flex items-center gap-1.5 mt-2">
+                <div className="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 rounded">
+                  <TrendingUp className="h-3 w-3 mr-0.5" />
+                  +{trends.pmCompliance.value}%
                 </div>
               </div>
-              <CheckCircle className="h-8 w-8 text-purple-600 opacity-50" />
             </div>
-            <Progress value={parseFloat(kpis.pmCompliance)} className="h-1.5 mt-3" />
-            <p className="text-xs text-gray-400 mt-2">Objectif: 95%</p>
+            <Progress value={parseFloat(kpis.pmCompliance)} className="h-1 mt-4" />
           </CardContent>
         </Card>
 
         {/* Cost */}
-        <Card className="relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-bl-full" />
+        <Card className="border-none shadow-sm bg-white dark:bg-zinc-900">
           <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Coût Maintenance</p>
-                <p className="text-4xl font-bold text-emerald-600">{((kpis.monthlyCost * 145) / 1000000).toFixed(1)}M DA</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingDown className="h-4 w-4 text-green-500" />
-                  <span className="text-sm font-medium text-green-600">-{trends.cost.value}%</span>
-                  <span className="text-xs text-gray-400">économie</span>
-                </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Coût Maintenance</p>
+                <DollarSign className="h-4 w-4 text-gray-400" />
               </div>
-              <DollarSign className="h-8 w-8 text-emerald-600 opacity-50" />
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{((kpis.monthlyCost * 145) / 1000000).toFixed(1)}M DA</p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-[10px] text-gray-400 font-medium">BUDGET: 7.5M DA</span>
+              </div>
             </div>
-            <p className="text-xs text-gray-500 mt-3">
-              Budget: 7.5M DA/mois
-            </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Secondary KPIs Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Gauge className="h-6 w-6 mx-auto text-blue-500 mb-2" />
-            <p className="text-2xl font-bold">{kpis.mttr}h</p>
-            <p className="text-xs text-gray-500">MTTR Moyen</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Target className="h-6 w-6 mx-auto text-green-500 mb-2" />
-            <p className="text-2xl font-bold">{oee.overall.toFixed(1)}%</p>
-            <p className="text-xs text-gray-500">OEE Global</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Settings className="h-6 w-6 mx-auto text-purple-500 mb-2" />
-            <p className="text-2xl font-bold">{kpis.operationalAssets}/{kpis.totalAssets}</p>
-            <p className="text-xs text-gray-500">Équip. Opérationnels</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Package className="h-6 w-6 mx-auto text-red-500 mb-2" />
-            <p className="text-2xl font-bold text-red-600">{kpis.lowStockParts}</p>
-            <p className="text-xs text-gray-500">Stock Bas</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Users className="h-6 w-6 mx-auto text-indigo-500 mb-2" />
-            <p className="text-2xl font-bold">{kpis.technicians}</p>
-            <p className="text-xs text-gray-500">Techniciens</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Shield className="h-6 w-6 mx-auto text-yellow-500 mb-2" />
-            <p className="text-2xl font-bold text-green-600">0</p>
-            <p className="text-xs text-gray-500">Incidents HSE</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'MTTR Moyen', value: `${kpis.mttr}h`, icon: Gauge, color: 'text-blue-500' },
+          { label: 'OEE Global', value: `${oee.overall.toFixed(1)}%`, icon: Target, color: 'text-emerald-500' },
+          { label: 'Équip. Opérationnels', value: `${kpis.operationalAssets}/${kpis.totalAssets}`, icon: Settings, color: 'text-zinc-500' },
+          { label: 'Stock Bas', value: kpis.lowStockParts, icon: Package, color: 'text-red-500' },
+          { label: 'Techniciens', value: kpis.technicians, icon: Users, color: 'text-zinc-600' },
+          { label: 'Incidents HSE', value: '0', icon: Shield, color: 'text-emerald-600' },
+        ].map((item, i) => (
+          <Card key={i} className="border-none shadow-sm bg-white dark:bg-zinc-900">
+            <CardContent className="p-4 flex flex-col items-center text-center">
+              <item.icon className={cn("h-4 w-4 mb-2", item.color)} />
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{item.value}</p>
+              <p className="text-[10px] uppercase font-semibold text-gray-400 tracking-tighter">{item.label}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* OEE Breakdown */}
