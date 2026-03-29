@@ -62,6 +62,17 @@ import {
   Package,
   Users,
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  BarChart,
+  Bar,
+} from 'recharts';
 
 interface PMTemplate {
   id: string;
